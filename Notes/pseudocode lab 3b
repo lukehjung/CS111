@@ -1,0 +1,31 @@
+function islegalBlock(b)
+{
+	if b < 0 || b >= total -blocks
+	|| b < time_legal_block
+	return false
+	else
+	return true
+
+}
+
+function IsFreeBlock(b)
+{
+	if(isLegalBlock(b) == false)
+	return false
+	else
+	return block__te_bitmap[b]
+}
+
+partition isfreeinode(i)
+{
+	if (i > 2 && i < resreved_inodes || i > totalinodes)
+		reutrn false;
+	else
+		return inode_free_bitmap[i];
+}
+
+blank_state[];
+inode_state[];
+parent[]
+
+for each block 

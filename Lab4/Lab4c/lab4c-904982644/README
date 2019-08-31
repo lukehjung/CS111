@@ -1,0 +1,17 @@
+NAME: Luke Jung
+EMAIL: lukejung@ucla.edu
+ID: 904982644
+
+Description of Files:
+lab4c_tcp.c: C file that runs on beagle bone environment and connects to a TCP server 
+with a temp log and accepts commands.  Similar to 4b assignment, with new parameters.
+Will generate same report, but through network connection rather than all internally.
+
+lab4c_tls.c: Same as TCP file, but uses TLS authentication to connect.
+
+Makefile: standard make file that uses options of default, clean, and dist.
+
+References: 
+https://www.openssl.org/docs/manmaster/man7/ssl.html
+https://web.cs.ucla.edu/classes/winter19/cs111/labs/P4C_iot/ASSIGNMENT/serverinfo.html
+http://man7.org/linux/man-pages/man2/socket.2.html

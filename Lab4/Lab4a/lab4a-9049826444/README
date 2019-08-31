@@ -1,0 +1,16 @@
+NAME: Luke Jung
+EMAIL: lukejung@ucla.edu
+ID: 904982644
+
+S/N: BBGW18040237
+MAC: 2CF7F1068FEC
+
+my_beaglebone.jpg: selfie with beaglebone
+
+connected.png: ifconfig with ip addresses
+
+copy.png: verification of scp command
+
+build_run.png: verification of running helloworld
+
+git.png: verification that I ran git clone

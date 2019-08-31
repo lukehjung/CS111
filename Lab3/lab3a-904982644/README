@@ -1,0 +1,10 @@
+NAME: Luke Jung, Justin Jeon
+EMAIL: lukejung@ucla.edu, justinjeon151@gmail.com
+ID: 904982644, 205008698
+
+Makefile: methods for make, make dist, and make clean
+lab3a.c: C file that parses through ext2 img file to give values for parameters listed from
+https://web.cs.ucla.edu/classes/winter19/cs111/labs/P3B_analyze/ASSIGNMENT/P3B.html
+
+References: 
+https://www.nongnu.org/ext2-doc/ext2.html

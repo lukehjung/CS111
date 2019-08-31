@@ -1,0 +1,91 @@
+CS 111 Operating Systems Principles
+
+Lab 0 Due Sunday
+
+CS131 CS151b CS 118
+
+Do things early or you'll die
+
+Lab 0 is 5% of grade
+Labs 1-4 40%
+Report/Current Events 5%
+Midterm 20%
+Final 30%
+
+What is operating system??
+System OED (1928): 
+I. Organized or connected group of objects
+II. Set of principles, etc. a scheme, a method.
+from Greek, set up with
+
+SK. A set of interconnected components that has a specfiied behavior observed at the interface with it's environment.
+
+American Heritage Dictionary:
+Software designed to control the hardware of a specific data processing system in order to allow users and application programs to make use of it
+
+Operating system is all about control, what's in charge for your computer
+
+Wikipedia
+System software that manages computer hardware and software resources and provides common services for computer programs
+
+Think of operating systems as a optimization problem, minimum cost solution to managing resources
+
+OS GOALS
+-protection
+-flexibility
+-simplicity
+-preformance
+-robustness
+
+ls -l big
+time grep x big
+
+grep looks at the 0's of metadata of file and skips over them to be really fast
+
+
+Problems with Operating Systems
+I. Tradeoffs (The waterbed effect)
+	1. Time space tradefff in sorting
+	2. Authentification
+		-passwords
+			-cheap
+		-hardware tokens
+			-harder to forge
+II. Incommenseurate Scaling
+	-Not everything scales at the same rate.
+	-Diseconomies of scale (star network) (can cause breakage)
+	-Economies of scale (pin factor) (can cause waste)
+III. Emergent properties 
+	-Grow so large that new things happen at a higher level of abstraction.
+	-Unanticipated larger properties when scaling.
+		-Tacoma Narrows Bridge
+		-UCLA dorm netowrks, 1980s
+IV. Propagation of Effects
+	-naturally in chaotic systems
+	-character encoding interferes with file names so can't create directories
+V. 	Complexitiy
+	-Moore's Law: Complexity goes up as time goes on
+	-Kyrder's Law
+	-Account of transistors is increasing, not speed.
+	-Complexity is growing, but speed to attack those problems are a big issue.
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

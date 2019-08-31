@@ -1,0 +1,113 @@
+CS Lecture 2
+Booting an operating system
+UEFI Uniteed Extensive Firmware Interface
+
+CPU goes through bus drives to find a UEFI file that can be bootable from.
+
+Globally Unique Identifier (GUID)
+
+Disks are usually split into partitions
+GUID is 128 bits long
+Each one in the world is unique, to make sure that you're booting off the corret device drive
+
+GUID Partition Table (GPT)
+Grub decides which operating system to boot
+
+
+BIOS
+Basic Input Output System
+Intent of bios was to be firmware that was preloaded into computer that could be something we could run whenever wanted.
+	-A bunch of subroutines, looks like RAM and can be executed
+	-BIOS didn't have to be fast, just needs to be robust enough to always boot.
+	-Takes a bunch of data from disk and slaps it into the RAM.  Moves 512 bytes
+
+read_ide_sector(int s, char *a){good only for first TiB of disk}
+
+PIO: Programmed I/O: CPU talks to registers on the disk contorller using special instructions
+
+	x86-64 REference manual
+	inb: takes a memory address from bus and copies one byte from the disk to another register.
+		byte read from that bus register = inb(___bus address(0x1f7)__) & (0xc0) //looks at top two bits of status register and checks to see if the top 
+																					bit is clear and the second bit is set
+			(0x1f7 is the status register)
+
+	void wait_for_disk(void){
+	while(inb(0x1f7) & 0xc0 != 0x40)
+		continue; //use continue to make it look nicer
+	}
+
+	read_ide_sector(int s, char *a){
+		wait_for_disk();
+		outb(0x1f2,1);
+		//outb(0x1f3, s & 0xff);
+		//outb(0x1f4, (s>>8) & 0xff);
+		//outb(0x1f5, (s>>16) & 0xff);
+		//outb(0x1f6, (s>>24) & 0xff); //&0xff isn't necessary because at low level it cuts off higher level bits
+
+		//outbyte copies 8 bits from the cpu to a register on the bus somewhere
+
+
+	for(int i = 0; i < 4; i ++)
+		outb(0x13f+i, s >> (8*i));
+
+	outb(0x1f7,0x20); //0x1f7 will tell you status of disk and we can change it to make it busy as well.  When it's busy it'll tell it to start working
+	wait_for_disk();
+	//insl(memory address, placement, word counter)
+	insl(0x1f0, a, 128)
+
+
+
+void wait_for_disk(void);
+Void read_ide_sector(int s, char *a);
+	BIOS
+
+goes through self testing, probe the bus for bootable sectors
+read_ide_sector(s, 0x800000);
+
+Last two bytes of sector must be a bit pattern to boot.
+If the bit pattern matches, it'll go to the bit location.
+
+Word: [A-Za-z]
+
+Source Code
+	unsigned long int words = 0;
+	bool in_word = false;
+
+	int s = 1;
+	for(int s = 1;; s++)
+	{
+		read_idle_sector(s, buf);
+		for(int j = 0; j < 512; j ++)
+		{
+			if(buf[j] ==  0)
+				report_words(words);
+			bool isalph = isalpha(buf[j] != 0);
+			words += isalph & ~in_word;
+			in_word = isalph;
+		}
+	}
+
+
+void report_words(unsigned long n)
+{
+	char *screen = (char *) 0xb8000;
+	char *p = screen + (80*25*2)/2-80; //algebra that makes the text center in the screen
+	do { 
+		*--p = n%10 + '0';
+		*--p = 7; //grey on black
+		n /= 10;
+	}
+	while(n != 0);
+
+	while(true) continue;
+}
+
+
+
+
+
+
+
+
+
+

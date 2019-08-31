@@ -1,0 +1,14 @@
+# NAME: Luke Jung
+# EMAIL: lukejung@ucla.edu
+# ID: 904982644
+
+Description of Files
+lab4b.c: Main C file that processes arguments from beaglebone with sensor on AIO 1 and Button on GPIO_50
+Makefile: Make file with smoke checks and distribution
+README: This file
+
+Sources: 
+https://wiki.debian.org/DateTime
+http://wiki.seeedstudio.com/Grove-Temperature_Sensor_V1.2/
+https://iotdk.intel.com/docs/master/mraa/
+http://man7.org/linux/man-pages/man2/poll.2.html

@@ -1,0 +1,243 @@
+Total: 1271 samples
+    1066  83.9%  83.9%     1271 100.0% run_threads
+     157  12.4%  96.2%      157  12.4% __strcmp_sse42
+      25   2.0%  98.2%       93   7.3% SortedList_insert
+      19   1.5%  99.7%      111   8.7% SortedList_lookup
+       3   0.2%  99.9%        3   0.2% _init
+       1   0.1% 100.0%        1   0.1% hash
+       0   0.0% 100.0%     1271 100.0% __clone
+       0   0.0% 100.0%     1271 100.0% start_thread
+ROUTINE ====================== run_threads in /u/ee/ugrad/luke/cs111/lab2b/lab2_list.c
+  1066   1271 Total samples (flat / cumulative)
+     .      .   65: 
+     .      .   66:    return hash % numlists;
+     .      .   67: }
+     .      .   68: 
+     .      .   69: void * run_threads(void * list)
+---
+     .      .   70: {
+     .      .   71: 	struct timespec start;
+     .      .   72: 	struct timespec end;
+     .      .   73: 
+     .      .   74: 	int num = (*(int*) list);
+     .      .   75: 	for(int i = num; i < element_len; i += threads)
+     .      .   76: 	{
+     .      .   77: 		int index = hash(elements[i].key);
+     .      .   78: 		switch(options)
+     .      .   79: 		{		
+     .      .   80: 			case MUTEX:
+     .      .   81: 			{
+     .      .   82: 				clock_gettime(CLOCK_MONOTONIC, &start);
+     .      .   83: 				pthread_mutex_lock(&lock);
+     .      .   84: 				clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .   85: 
+     .      .   86: 				long long time = end.tv_nsec - start.tv_nsec;
+     .      .   87: 				time += (end.tv_sec - start.tv_sec) * 1000000000;
+     .      .   88: 				threadTimes[num] += time;
+     .      .   89: 
+     .      .   90: 		     	SortedList_insert(&lists[index], &elements[i]);
+     .      .   91: 		     	pthread_mutex_unlock(&lock);
+     .      .   92: 				break; 
+     .      .   93: 			}
+     .      .   94: 
+     .      .   95: 			case SPINLOCK:
+     .      .   96: 			{
+     .      .   97: 				clock_gettime(CLOCK_MONOTONIC, &start);
+   540    540   98:           		while (__sync_lock_test_and_set(&spinlock, 1)) continue;
+     .      .   99: 				clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .  100: 
+     .      .  101: 				long long time = end.tv_nsec - start.tv_nsec;
+     .      .  102: 				time += (end.tv_sec - start.tv_sec) * 1000000000;
+     .      .  103: 				threadTimes[num] += time;
+     .      .  104: 
+     .     93  105: 				SortedList_insert(&lists[index], &elements[i]);
+     .      .  106: 		     	__sync_lock_release(&spinlock);
+     .      .  107: 				break; 
+     .      .  108: 			}
+     .      .  109: 			case NONE:
+     .      .  110: 			{
+     .      .  111: 				SortedList_insert(&lists[index], &elements[i]);
+     .      .  112: 				break;
+     .      .  113: 			}
+     .      .  114: 		}
+     .      .  115: 	}
+     .      .  116: 
+     .      .  117: 	SortedListElement_t * el;
+     .      .  118: 	for(int i = num; i < element_len; i += threads)
+     .      .  119: 	{
+     .      1  120: 		int index = hash(elements[i].key);
+     .      .  121: 		switch(options)
+     .      .  122: 		{		
+     .      .  123: 			case MUTEX:
+     .      .  124: 			{
+     .      .  125: 				clock_gettime(CLOCK_MONOTONIC, &start);
+     .      .  126: 				pthread_mutex_lock(&lock);
+     .      .  127: 				clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .  128: 
+     .      .  129: 				long long time = end.tv_nsec - start.tv_nsec;
+     .      .  130: 				time += (end.tv_sec - start.tv_sec) * 1000000000;
+     .      .  131: 				threadTimes[num] += time;
+     .      .  132: 
+     .      .  133: 		     	el = SortedList_lookup(&lists[index], elements[i].key);
+     .      .  134: 		     	if(el)
+     .      .  135: 		     	{
+     .      .  136: 		     		SortedList_delete(el);
+     .      .  137: 		     	}
+     .      .  138: 		     	pthread_mutex_unlock(&lock);
+     .      .  139: 				break; 
+     .      .  140: 			}
+     .      .  141: 
+     .      .  142: 			case SPINLOCK:
+     .      .  143: 			{
+     .      .  144: 				clock_gettime(CLOCK_MONOTONIC, &start);
+   526    526  145:           		while (__sync_lock_test_and_set(&spinlock, 1)) continue;
+     .      .  146: 				clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .  147: 
+     .      .  148: 				long long time = end.tv_nsec - start.tv_nsec;
+     .      .  149: 				time += (end.tv_sec - start.tv_sec) * 1000000000;
+     .      .  150: 				threadTimes[num] += time;
+     .      .  151: 
+     .    111  152: 				el = SortedList_lookup(&lists[index], elements[i].key);
+     .      .  153: 		     	if(el)
+     .      .  154: 		     	{
+     .      .  155: 		     		SortedList_delete(el);
+     .      .  156: 		     	}
+     .      .  157: 		     	__sync_lock_release(&spinlock);
+     .      .  158: 				break; 
+     .      .  159: 			}
+     .      .  160: 			case NONE:
+     .      .  161: 			{
+     .      .  162: 				el = SortedList_lookup(&lists[index], elements[i].key);
+     .      .  163: 		     	if(el)
+     .      .  164: 		     	{
+     .      .  165: 		     		SortedList_delete(el);
+     .      .  166: 		     	}
+     .      .  167: 				break;
+     .      .  168: 			}
+     .      .  169: 		}
+     .      .  170: 	}
+     .      .  171: 	return NULL;
+     .      .  172: }
+---
+     .      .  173: 
+     .      .  174: int main(int argc, char *argv[])
+     .      .  175: {
+     .      .  176: 	struct option long_options[] = 
+     .      .  177: 	{
+ROUTINE ====================== run_threads in /u/ee/ugrad/luke/cs111/lab2b/lab2_list.c
+  1066   1271 Total samples (flat / cumulative)
+     .      .   65: 
+     .      .   66:    return hash % numlists;
+     .      .   67: }
+     .      .   68: 
+     .      .   69: void * run_threads(void * list)
+---
+     .      .   70: {
+     .      .   71: 	struct timespec start;
+     .      .   72: 	struct timespec end;
+     .      .   73: 
+     .      .   74: 	int num = (*(int*) list);
+     .      .   75: 	for(int i = num; i < element_len; i += threads)
+     .      .   76: 	{
+     .      .   77: 		int index = hash(elements[i].key);
+     .      .   78: 		switch(options)
+     .      .   79: 		{		
+     .      .   80: 			case MUTEX:
+     .      .   81: 			{
+     .      .   82: 				clock_gettime(CLOCK_MONOTONIC, &start);
+     .      .   83: 				pthread_mutex_lock(&lock);
+     .      .   84: 				clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .   85: 
+     .      .   86: 				long long time = end.tv_nsec - start.tv_nsec;
+     .      .   87: 				time += (end.tv_sec - start.tv_sec) * 1000000000;
+     .      .   88: 				threadTimes[num] += time;
+     .      .   89: 
+     .      .   90: 		     	SortedList_insert(&lists[index], &elements[i]);
+     .      .   91: 		     	pthread_mutex_unlock(&lock);
+     .      .   92: 				break; 
+     .      .   93: 			}
+     .      .   94: 
+     .      .   95: 			case SPINLOCK:
+     .      .   96: 			{
+     .      .   97: 				clock_gettime(CLOCK_MONOTONIC, &start);
+   540    540   98:           		while (__sync_lock_test_and_set(&spinlock, 1)) continue;
+     .      .   99: 				clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .  100: 
+     .      .  101: 				long long time = end.tv_nsec - start.tv_nsec;
+     .      .  102: 				time += (end.tv_sec - start.tv_sec) * 1000000000;
+     .      .  103: 				threadTimes[num] += time;
+     .      .  104: 
+     .     93  105: 				SortedList_insert(&lists[index], &elements[i]);
+     .      .  106: 		     	__sync_lock_release(&spinlock);
+     .      .  107: 				break; 
+     .      .  108: 			}
+     .      .  109: 			case NONE:
+     .      .  110: 			{
+     .      .  111: 				SortedList_insert(&lists[index], &elements[i]);
+     .      .  112: 				break;
+     .      .  113: 			}
+     .      .  114: 		}
+     .      .  115: 	}
+     .      .  116: 
+     .      .  117: 	SortedListElement_t * el;
+     .      .  118: 	for(int i = num; i < element_len; i += threads)
+     .      .  119: 	{
+     .      1  120: 		int index = hash(elements[i].key);
+     .      .  121: 		switch(options)
+     .      .  122: 		{		
+     .      .  123: 			case MUTEX:
+     .      .  124: 			{
+     .      .  125: 				clock_gettime(CLOCK_MONOTONIC, &start);
+     .      .  126: 				pthread_mutex_lock(&lock);
+     .      .  127: 				clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .  128: 
+     .      .  129: 				long long time = end.tv_nsec - start.tv_nsec;
+     .      .  130: 				time += (end.tv_sec - start.tv_sec) * 1000000000;
+     .      .  131: 				threadTimes[num] += time;
+     .      .  132: 
+     .      .  133: 		     	el = SortedList_lookup(&lists[index], elements[i].key);
+     .      .  134: 		     	if(el)
+     .      .  135: 		     	{
+     .      .  136: 		     		SortedList_delete(el);
+     .      .  137: 		     	}
+     .      .  138: 		     	pthread_mutex_unlock(&lock);
+     .      .  139: 				break; 
+     .      .  140: 			}
+     .      .  141: 
+     .      .  142: 			case SPINLOCK:
+     .      .  143: 			{
+     .      .  144: 				clock_gettime(CLOCK_MONOTONIC, &start);
+   526    526  145:           		while (__sync_lock_test_and_set(&spinlock, 1)) continue;
+     .      .  146: 				clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .  147: 
+     .      .  148: 				long long time = end.tv_nsec - start.tv_nsec;
+     .      .  149: 				time += (end.tv_sec - start.tv_sec) * 1000000000;
+     .      .  150: 				threadTimes[num] += time;
+     .      .  151: 
+     .    111  152: 				el = SortedList_lookup(&lists[index], elements[i].key);
+     .      .  153: 		     	if(el)
+     .      .  154: 		     	{
+     .      .  155: 		     		SortedList_delete(el);
+     .      .  156: 		     	}
+     .      .  157: 		     	__sync_lock_release(&spinlock);
+     .      .  158: 				break; 
+     .      .  159: 			}
+     .      .  160: 			case NONE:
+     .      .  161: 			{
+     .      .  162: 				el = SortedList_lookup(&lists[index], elements[i].key);
+     .      .  163: 		     	if(el)
+     .      .  164: 		     	{
+     .      .  165: 		     		SortedList_delete(el);
+     .      .  166: 		     	}
+     .      .  167: 				break;
+     .      .  168: 			}
+     .      .  169: 		}
+     .      .  170: 	}
+     .      .  171: 	return NULL;
+     .      .  172: }
+---
+     .      .  173: 
+     .      .  174: int main(int argc, char *argv[])
+     .      .  175: {
+     .      .  176: 	struct option long_options[] = 
+     .      .  177: 	{

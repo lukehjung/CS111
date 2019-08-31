@@ -1,0 +1,12 @@
+Luke Jung
+904982644
+
+Some limitations of my code are that the syntax for each command is really specific.
+Meaning that there's not really good option parsing for writing syntax that might be a little
+off or other errors.  Also, if there was some code that exploited a certain function,
+I couldn't check whether the command itself was written well because it just executes
+given the options.
+
+Extra features that I have include that I set each dynamic array to size 10, so it doesn't take 
+as much memory and reallocate memory in increments of 10.  Also, the error checking is pretty broad,
+it doesn't specify the exact error but more of a concept of what went wrong.
